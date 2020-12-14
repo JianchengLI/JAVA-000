@@ -31,7 +31,7 @@ public class T1Controller {
     private DataSource dataSource;
 
     @Autowired
-    @Qualifier("masterJdbcTemplate")
+    @Qualifier("slaveJdbcTemplate")
     private JdbcTemplate jdbcTemplate;
 
     @RequestMapping("/index")
@@ -43,22 +43,42 @@ public class T1Controller {
         return jdbcTemplate.queryForList("SELECT * FROM t1");
     }
 
+//    @Bean
+//    @ConfigurationProperties("master.datasource")
+//    public DataSourceProperties masterDataSourceProperties() {
+//        return new DataSourceProperties();
+//    }
+//
+//    @Bean
+//    public DataSource masterDataSource() {
+//        DataSourceProperties dataSourceProperties = masterDataSourceProperties();
+//        log.info("master datasource: {}", dataSourceProperties.getUrl());
+//        return dataSourceProperties.initializeDataSourceBuilder().build();
+//    }
+//
+//    @Bean(name="masterJdbcTemplate")
+//    public JdbcTemplate masterJdbcTemplate (
+//            @Qualifier("masterDataSource")  DataSource dataSource ) {
+//
+//        return new JdbcTemplate(dataSource);
+//    }
+
     @Bean
-    @ConfigurationProperties("master.datasource")
-    public DataSourceProperties masterDataSourceProperties() {
+    @ConfigurationProperties("slave.datasource")
+    public DataSourceProperties slaveDataSourceProperties() {
         return new DataSourceProperties();
     }
 
     @Bean
-    public DataSource masterDataSource() {
-        DataSourceProperties dataSourceProperties = masterDataSourceProperties();
-        log.info("master datasource: {}", dataSourceProperties.getUrl());
+    public DataSource slaveDataSource() {
+        DataSourceProperties dataSourceProperties = slaveDataSourceProperties();
+        log.info("slave datasource: {}", dataSourceProperties.getUrl());
         return dataSourceProperties.initializeDataSourceBuilder().build();
     }
 
-    @Bean(name="masterJdbcTemplate")
-    public JdbcTemplate primaryJdbcTemplate (
-            @Qualifier("masterDataSource")  DataSource dataSource ) {
+    @Bean(name="slaveJdbcTemplate")
+    public JdbcTemplate slaveJdbcTemplate (
+            @Qualifier("slaveDataSource")  DataSource dataSource ) {
 
         return new JdbcTemplate(dataSource);
     }
